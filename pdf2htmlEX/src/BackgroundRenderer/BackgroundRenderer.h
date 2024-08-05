@@ -18,8 +18,8 @@ class OutputDev;
 
 namespace pdf2htmlEX {
 
-class Param;
-class HTMLRenderer;
+struct Param;
+struct HTMLRenderer;
 class BackgroundRenderer 
 {
 public:
