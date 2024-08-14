@@ -18,20 +18,20 @@
 
 #include "SignalHandler.h"
 
-#include "ffw.h"                      // needed for:
-#include "gfile.h"                    //   FindProgDir => FindProgRoot in 20230101
-#include "fontforge/autowidth.h"      //   FVRemoveKerns
-#include "fontforge/bitmapchar.h"     //   SFReplaceEncodingBDFProps
-#include "fontforge/cvimages.h"       //   FVImportImages
-#include "fontforge/encoding.h"       //   (helpful as we have a name conflict)
-#include "fontforge/fvfonts.h"        //   SFFindSlot
-#include "fontforge/namelist.h"       //   UniFromName
-#include "fontforge/savefont.h"       //   GenerateScript
-#include "fontforge/splineorder2.h"   //   SFConvertToOrder2
-#include "fontforge/splineutil.h"     //   AltUniFree
-#include "fontforge/splineutil2.h"    //   SplineFontNew
-#include "fontforge/start.h"          //   InitSimpleStuff
-#include "fontforge/tottf.h"          //   SFDefaultOS2Info
+#include "ffw.h"          // needed for:
+#include <gfile.h>        //   FindProgDir => FindProgRoot in 20230101
+#include <autowidth.h>    //   FVRemoveKerns
+#include <bitmapchar.h>   //   SFReplaceEncodingBDFProps
+#include <cvimages.h>     //   FVImportImages
+#include <encoding.h>     //   (helpful as we have a name conflict)
+#include <fvfonts.h>      //   SFFindSlot
+#include <namelist.h>     //   UniFromName
+#include <savefont.h>     //   GenerateScript
+#include <splineorder2.h> //   SFConvertToOrder2
+#include <splineutil.h>   //   AltUniFree
+#include <splineutil2.h>  //   SplineFontNew
+#include <start.h>        //   InitSimpleStuff
+#include <tottf.h>        //   SFDefaultOS2Info
 
 static real EPS=1e-6;
 
