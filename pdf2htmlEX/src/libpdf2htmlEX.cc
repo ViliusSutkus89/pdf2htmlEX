@@ -52,50 +52,42 @@
 namespace pdf2htmlEX {
 
   pdf2htmlEX::pdf2htmlEX() : param(std::make_unique<Param>()) {
+    const char * tmp = getenv("TMPDIR");
+    if (!tmp) {
 #if defined(__MINGW32__)
-    param->data_dir = get_exec_dir(".");
-    param->tmp_dir  = get_tmp_dir();
-#else
-    char const *tmp = getenv("TMPDIR");
-
-#ifdef P_tmpdir
-    if (!tmp)
+      tmp = get_tmp_dir();
+#elif defined(__ANDROID_API__)
+      tmp = "/data/local/tmp";
+#elif defined(P_tmpdir)
       tmp = P_tmpdir;
-#endif
-
-#ifdef _PATH_TMP
-    if (!tmp)
-        tmp = _PATH_TMP;
-#endif
-    if (!tmp)
+#elif defined(_PATH_TMP)
+      tmp = _PATH_TMP;
+#else
       tmp = "/tmp";
-
-    param->tmp_dir = tmp;
-    param->data_dir = PDF2HTMLEX_DATA_PATH;
 #endif
+    }
+    param->tmp_dir = tmp;
+    m_tmpDirWithoutSuffix = tmp;
 
-    m_tmpDirWithoutSuffix = param->tmp_dir;
+    const char *data_dir = getenv("PDF2HTMLEX_DATA_DIR");
+#if defined(__MINGW32__)
+    if (!data_dir)
+      data_dir = get_exec_dir(".");
+#endif
+    if (!data_dir)
+      data_dir = PDF2HTMLEX_DATA_PATH.c_str();
+    param->data_dir = data_dir;
+
+    const char *poppler_data_dir = getenv("POPPLER_DATA_DIR");
+    if (!poppler_data_dir)
+      poppler_data_dir = POPPLER_DATA_DIR.c_str();
+    param->poppler_data_dir = poppler_data_dir;
+
     initParam();
   }
 
   // Dtor needed, because Param is forward declared in the header
   pdf2htmlEX::~pdf2htmlEX() = default;
-
-  /* class GlobalParamsGC {
-  private:
-    GlobalParams *m_savedCopy;
-    std::unique_ptr<GlobalParams> m_globalParams;
-  public:
-    GlobalParamsGC(const char *popplerDataDir) {
-      m_savedCopy = globalParams;
-      m_globalParams = std::make_unique<GlobalParams>(popplerDataDir);
-      globalParams = m_globalParams.get();
-    }
-
-    ~GlobalParamsGC() {
-      globalParams = m_savedCopy;
-    }
-  }; */
 
   void pdf2htmlEX::convert() {
     checkParam();
@@ -109,9 +101,8 @@ namespace pdf2htmlEX {
 
     // read poppler config file
     globalParams = std::make_unique<GlobalParams>(
-      !param->poppler_data_dir.empty() ? param->poppler_data_dir.c_str() : NULL
+      !param->poppler_data_dir.empty() ? param->poppler_data_dir.c_str() : nullptr
     );
-    //GlobalParamsGC gp(!param->poppler_data_dir.empty() ? param->poppler_data_dir.c_str() : nullptr);
 
     // open PDF file
     std::optional<GooString> ownerPW;

@@ -18,6 +18,7 @@ namespace pdf2htmlEX {
 static const std::string PDF2HTMLEX_VERSION = "@PDF2HTMLEX_VERSION@";
 static const std::string PDF2HTMLEX_PREFIX = "@CMAKE_INSTALL_PREFIX@";
 static const std::string PDF2HTMLEX_DATA_PATH = "@CMAKE_INSTALL_PREFIX@""/share/pdf2htmlEX";
+static const std::string POPPLER_DATA_DIR = "@POPPLER_DATA_DIR@";
 
 } // namespace pdf2htmlEX
 
