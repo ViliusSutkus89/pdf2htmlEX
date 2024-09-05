@@ -16,9 +16,14 @@
 namespace pdf2htmlEX {
 
 static const std::string PDF2HTMLEX_VERSION = "@PDF2HTMLEX_VERSION@";
-static const std::string PDF2HTMLEX_PREFIX = "@CMAKE_INSTALL_PREFIX@";
-static const std::string PDF2HTMLEX_DATA_PATH = "@CMAKE_INSTALL_PREFIX@""/share/pdf2htmlEX";
-static const std::string POPPLER_DATA_DIR = "@POPPLER_DATA_DIR@";
+
+// static const std::string PDF2HTMLEX_PREFIX = "@CMAKE_INSTALL_PREFIX@";
+// PDF2HTMLEX_PREFIX is removed on conan, because it's wrong on conan.
+// During generate() stage, it's always /usr/share, because install path isn't known until package stage
+
+#cmakedefine POPPLER_DATA_DIR "@POPPLER_DATA_DIR@"
+#cmakedefine FONTCONFIG_PATH "@FONTCONFIG_PATH@"
+
 
 } // namespace pdf2htmlEX
 

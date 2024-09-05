@@ -354,6 +354,16 @@ void check_param()
 
 int main(int argc, char **argv)
 {
+    const char *fontconfig_path = getenv("FONTCONFIG_PATH");
+    if (nullptr == fontconfig_path) {
+      // Storage is allocated and after successful putenv, it will never be freed.
+      // This is the way of putenv.
+      char *storage = strdup("FONTCONFIG_PATH=" FONTCONFIG_PATH);
+      if (0 != putenv(storage)) {
+        free(storage);
+      }
+    }
+
     // We need to adjust these directories before parsing the options.
     const char * tmp = getenv("TMPDIR");
     if (!tmp) {
@@ -371,29 +381,26 @@ int main(int argc, char **argv)
     }
     param.tmp_dir = tmp;
 
-    const char *data_dir = getenv("PDF2HTMLEX_DATA_DIR");
-#if defined(__MINGW32__)
-    if (!data_dir)
-        data_dir = get_exec_dir(argv[0]);
-#endif
-    if (!data_dir)
-        data_dir = PDF2HTMLEX_DATA_PATH.c_str();
-    param.data_dir = data_dir;
+// @TODO: AppImage temporarily disabled, because path would be wrong anyways
+//    if (getenv("APPDIR")) {
+//       we are running inside an AppImage so we need to adjust the data_dir
+//       however the user can supply some other absolute path later
+//      param.data_dir = string(getenv("APPDIR")) + param.data_dir;
+//      param.poppler_data_dir = param.data_dir + "/poppler";
+//    }
 
-    const char *poppler_data_dir = getenv("POPPLER_DATA_DIR");
-    if (!poppler_data_dir)
-        poppler_data_dir = POPPLER_DATA_DIR.c_str();
-    param.poppler_data_dir = poppler_data_dir;
-
-    if (getenv("APPDIR")) {
-      // we are running inside an AppImage so we need to adjust the data_dir
-      // however the user can supply some other absolute path later
-      //
-      param.data_dir = string(getenv("APPDIR")) + param.data_dir;
-      param.poppler_data_dir = param.data_dir + "/poppler";
-    }
+    param.poppler_data_dir = POPPLER_DATA_DIR;
 
     parse_options(argc, argv);
+
+    const char *data_dir_env = getenv("PDF2HTMLEX_DATA_DIR");
+    if (nullptr != data_dir_env)
+      param.data_dir = data_dir_env;
+
+    const char *poppler_data_dir_env = getenv("POPPLER_DATA_DIR");
+    if (nullptr != poppler_data_dir_env)
+      param.poppler_data_dir = poppler_data_dir_env;
+
     check_param();
 
     //prepare the directories

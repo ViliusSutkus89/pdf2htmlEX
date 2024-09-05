@@ -52,7 +52,17 @@
 namespace pdf2htmlEX {
 
   pdf2htmlEX::pdf2htmlEX() : param(std::make_unique<Param>()) {
-    const char * tmp = getenv("TMPDIR");
+    const char *fontconfig_path = getenv("FONTCONFIG_PATH");
+    if (nullptr == fontconfig_path) {
+      // Storage is allocated and after successful putenv, it will never be freed.
+      // This is the way of putenv.
+      char *storage = strdup("FONTCONFIG_PATH=" FONTCONFIG_PATH);
+      if (0 != putenv(storage)) {
+        free(storage);
+      }
+    }
+
+    const char * tmp = nullptr;
     if (!tmp) {
 #if defined(__MINGW32__)
       tmp = get_tmp_dir();
@@ -69,19 +79,7 @@ namespace pdf2htmlEX {
     param->tmp_dir = tmp;
     m_tmpDirWithoutSuffix = tmp;
 
-    const char *data_dir = getenv("PDF2HTMLEX_DATA_DIR");
-#if defined(__MINGW32__)
-    if (!data_dir)
-      data_dir = get_exec_dir(".");
-#endif
-    if (!data_dir)
-      data_dir = PDF2HTMLEX_DATA_PATH.c_str();
-    param->data_dir = data_dir;
-
-    const char *poppler_data_dir = getenv("POPPLER_DATA_DIR");
-    if (!poppler_data_dir)
-      poppler_data_dir = POPPLER_DATA_DIR.c_str();
-    param->poppler_data_dir = poppler_data_dir;
+    param->poppler_data_dir = POPPLER_DATA_DIR;
 
     initParam();
   }
@@ -90,6 +88,20 @@ namespace pdf2htmlEX {
   pdf2htmlEX::~pdf2htmlEX() = default;
 
   void pdf2htmlEX::convert() {
+    const char *tmpdir_env = getenv("TMPDIR");
+    if (nullptr != tmpdir_env) {
+      param->tmp_dir = tmpdir_env;
+      m_tmpDirWithoutSuffix = tmpdir_env;
+    }
+
+    const char *data_dir_env = getenv("PDF2HTMLEX_DATA_DIR");
+    if (nullptr != data_dir_env)
+      param->data_dir = data_dir_env;
+
+    const char *poppler_data_dir = getenv("POPPLER_DATA_DIR");
+    if (nullptr != poppler_data_dir)
+      param->poppler_data_dir = poppler_data_dir;
+
     checkParam();
 
     prepareDirectories();
